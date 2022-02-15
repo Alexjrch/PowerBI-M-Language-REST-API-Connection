@@ -1,0 +1,44 @@
+let
+  // Concatenates the Consumer Key & Consumer Secret and converts to base64
+  authKey = "Basic " & Binary.ToText(Text.ToBinary("YOU-CONSUMER-KEY:YOUR-CONSUMER-SECRET"),0),
+  
+  // Input the website link where you can get the token from:
+  url = "https://YOU-TOKEN-LINK",
+  
+  // Uses the POST oauth2/token method to obtain a bearer token
+  GetJson = Web.Contents(url,
+     [
+         Headers = [#"Authorization"=authKey,
+                    #"Content-Type"="application/x-www-form-urlencoded;charset=UTF-8"],
+         Content = Text.ToBinary("grant_type=client_credentials") 
+     ]
+ ),
+ 
+  // Now you will receive a Json document with the current token
+  FormatAsJson = Json.Document(GetJson),
+  
+  // Gets token from the Json response
+  AccessToken = FormatAsJson[access_token],
+  AccessTokenHeader = "bearer " & AccessToken,
+  
+  // Uses the GET search method using the bearer token from the previous POST oauth2/token method
+  GetJsonQuery = Web.Contents("https://YOUR-API-DATA-LINK",
+     [
+         Headers = [#"Authorization"=AccessTokenHeader]
+     ]
+ ),
+ 
+  // Now you will receive a Json document with all your data
+  FormatAsJsonQuery = Json.Document(GetJsonQuery),
+
+  // Transform the data from Json document to power query editor
+  NavigateToItems = FormatAsJsonQuery[items],
+  TableFromList = Table.FromList(NavigateToItems, Splitter.SplitByNothing(), null, null, ExtraValues.Error),
+
+  // Now you should expand your data into a table with...
+  // I suggest you to click the 'expand' button in the table, without coding
+  // But the following code will return the same result, if you are familiar with te table content and M language:
+  ExpandColumn = Table.ExpandRecordColumn(TableFromList, "Column1", {"YOU-COLUMN-NAME1","YOU-COLUMN-NAME2","YOU-COLUMN-NAME3",...}),
+
+in
+  "ExpandColumn"
