@@ -1,7 +1,7 @@
 let
   // Firstly, you should have the website link where you can get your data ready:
   // I suggest you to add &limit=10000 at the end of your link to ensure the speed of loading data
-  url = "https://shop.ez4edu.com/rest/V1/ez4-shop/creditsuse?action=used&limit=200000",
+  url = "YOURLINK",
 
   // Input your tokennumber and make the head of it as a bearer token
   token = "YOU-TOKEN-NUMBER",
